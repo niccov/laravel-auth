@@ -25,6 +25,8 @@ class PostSeeder extends Seeder
             $post->description = $faker->text(400);
             $post->language = $faker->sentence(4);
             $post->slug = Str::slug($post->title, '-');
+
+            $post->save();
         }
     }
 }
