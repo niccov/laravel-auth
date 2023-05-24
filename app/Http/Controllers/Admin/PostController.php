@@ -5,6 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -26,7 +29,7 @@ class PostController extends Controller
      */
     public function create()
     {
-        //
+        return view('admin.posts.create');
     }
 
     /**
@@ -37,7 +40,18 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $formData = $request->all();
+
+        $this->validation($formData);
+
+        $post = new Post();
+
+        $post->fill($formData);
+        $post->slug = Str::slug($post->title, '-');
+
+        $post->save();
+
+        return redirect()->route('admin.posts.show', $post);
     }
 
     /**
@@ -59,7 +73,7 @@ class PostController extends Controller
      */
     public function edit(Post $post)
     {
-        //
+        return view('admin.posts.edit', compact('post'));
     }
 
     /**
@@ -71,7 +85,15 @@ class PostController extends Controller
      */
     public function update(Request $request, Post $post)
     {
-        //
+        $formData = $request->all();
+
+        $this->validation($formData);
+
+        $post->slug = Str::slug($formData['title'], '-');
+
+        $post->update($formData);
+
+        return redirect()->route('admin.posts.show', $post);
     }
 
     /**
@@ -82,6 +104,19 @@ class PostController extends Controller
      */
     public function destroy(Post $post)
     {
-        //
+        $post->delete();
+
+        return redirect()->route('admin.posts.index');
+    }
+
+    private function validation($formData) {
+        $validator = Validator::make($formData, [
+            "title" => 'required|max:255|min:4',
+            "description" => 'required',
+            "language" => 'required'
+        ], [
+            "title.max" => 'Il titolo deve avere massimo :max caratteri',
+            "title.required" => 'Devi inserire un titolo'
+        ])->validate();
     }
 }

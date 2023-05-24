@@ -23,5 +23,11 @@
             @endforeach
         </tbody>
     </table>
+
+    <div class="d-flex justify-content-around">
+        <a href="{{route('admin.posts.create')}}" class="btn btn-primary">
+            Aggiungi
+        </a>
+    </div>
 </div>
 @endsection
